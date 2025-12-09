@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة الإبلاغ المتقدمة - فيسبوك</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* إضافة CSS - مشابه للنظام السابق مع تحسينات */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .system-header {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .system-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .control-panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .proxy-control {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+        }
+        
+        .reports-list {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .report-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 5px solid;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-queued {
+            background: #ffd700;
+            color: #856404;
+        }
+        
+        .status-completed {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-failed {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="system-header">
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                أداة الإبلاغ الآمنة المتقدمة
+                <i class="fas fa-bolt"></i>
+            </h1>
+            <p>نظام محترف للإبلاغ عن الحسابات الإرهابية مع حماية من الحظر</p>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <!-- سيتم تعبئة الإحصائيات بالجافاسكريبت -->
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="control-panel">
+                <h2><i class="fas fa-cogs"></i> لوحة التحكم</h2>
+                
+                <div class="form-section">
+                    <h3>تقديم بلاغ جديد</h3>
+                    <form id="reportForm">
+                        <div class="form-group">
+                            <label>رابط الحساب:</label>
+                            <input type="url" id="profileUrl" class="form-control" 
+                                   placeholder="https://facebook.com/username" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <label>عدد البلاغات:</label>
+                                <input type="number" id="reportCount" min="1" max="10" value="1" 
+                                       class="form-control">
+                            </div>
+                            <div class="form-col">
+                                <label>الأولوية:</label>
+                                <select id="priority" class="form-control">
+                                    <option value="low">منخفضة</option>
+                                    <option value="medium" selected>متوسطة</option>
+                                    <option value="high">عالية</option>
+                                    <option value="critical">حرجة</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>طريقة الإبلاغ:</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="method" value="selenium" checked>
+                                    Selenium (متصفح)
+                                </label>
+                                <label>
+                                    <input type="radio" name="method" value="requests">
+                                    Requests (سريع)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-paper-plane"></i> إرسال البلاغات
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="proxy-control">
+                    <h3><i class="fas fa-sync-alt"></i> إدارة البروكسيات</h3>
+                    <p>قم بتغيير البروكسي يدوياً لتجنب الحظر</p>
+                    <button onclick="rotateProxy()" class="btn btn-success">
+                        <i class="fas fa-random"></i> تغيير البروكسي
+                    </button>
+                </div>
+            </div>
+            
+            <div class="reports-section">
+                <h2><i class="fas fa-history"></i> آخر البلاغات</h2>
+                <div class="reports-list" id="reportsList">
+                    <!-- سيتم تعبئة البلاغات بالجافاسكريبت -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // جلب الإحصائيات
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.stats;
+                    const statsGrid = document.getElementById('statsGrid');
+                    
+                    statsGrid.innerHTML = `
+                        <div class="stat-card" style="border-color: #667eea;">
+                            <h3>إجمالي البلاغات</h3>
+                            <div class="stat-number">${stats.total}</div>
+                            <p>جميع البلاغات</p>
+                        </div>
+                        <div class="stat-card" style="border-color: #28a745;">
+                            <h3>مكتملة</h3>
+                            <div class="stat-number">${stats.completed}</div>
+                            <p>بلاغات ناجحة</p>
+                        </div>
+                        <div class="stat-card" style="border-color: #dc3545;">
+                            <h3>فاشلة</h3>
+                            <div class="stat-number">${stats.failed}</div>
+                            <p>بلاغات لم تنجح</p>
+                        </div>
+                        <div class="stat-card" style="border-color: #ffc107;">
+                            <h3>في الطابور</h3>
+                            <div class="stat-number">${stats.queued}</div>
+                            <p>بلاغات قيد الانتظار</p>
+                        </div>
+                        <div class="stat-card" style="border-color: #17a2b8;">
+                            <h3>اليوم</h3>
+                            <div class="stat-number">${stats.today}</div>
+                            <p>بلاغات اليوم</p>
+                        </div>
+                        <div class="stat-card" style="border-color: #6f42c1;">
+                            <h3>حجم الطابور</h3>
+                            <div class="stat-number">${data.queue_size}</div>
+                            <p>بلاغات في الطابور</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        // جلب البلاغات
+        async function loadReports() {
+            try {
+                const response = await fetch('/api/reports');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const reportsList = document.getElementById('reportsList');
+                    const reports = data.reports.slice(0, 10); // أول 10 بلاغات
+                    
+                    if (reports.length === 0) {
+                        reportsList.innerHTML = '<p>لا توجد بلاغات سابقة</p>';
+                        return;
+                    }
+                    
+                    reportsList.innerHTML = reports.map(report => `
+                        <div class="report-item" style="border-left-color: ${getStatusColor(report.status)}">
+                            <div class="report-header">
+                                <strong>${report.account_name || 'غير معروف'}</strong>
+                                <span class="status-badge status-${report.status}">
+                                    ${getStatusText(report.status)}
+                                </span>
+                            </div>
+                            <div class="report-details">
+                                <small>${report.profile_url}</small>
+                                <div style="margin-top: 5px;">
+                                    <span class="badge">${report.report_count}x</span>
+                                    <span class="badge">${report.priority}</span>
+                                </div>
+                            </div>
+                            <div class="report-time">
+                                <small>${new Date(report.timestamp).toLocaleString('ar-SA')}</small>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+            }
+        }
+        
+        function getStatusColor(status) {
+            const colors = {
+                'queued': '#ffc107',
+                'completed': '#28a745',
+                'failed': '#dc3545'
+            };
+            return colors[status] || '#6c757d';
+        }
+        
+        function getStatusText(status) {
+            const texts = {
+                'queued': 'في الانتظار',
+                'completed': 'مكتمل',
+                'failed': 'فاشل'
+            };
+            return texts[status] || status;
+        }
+        
+        // تقديم بلاغ جديد
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                profile_url: document.getElementById('profileUrl').value,
+                report_count: parseInt(document.getElementById('reportCount').value),
+                priority: document.getElementById('priority').value,
+                method: document.querySelector('input[name="method"]:checked').value
+            };
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/submit_report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`تم إضافة ${data.report_ids.length} بلاغ للطابور`);
+                    document.getElementById('profileUrl').value = '';
+                    loadStats();
+                    loadReports();
+                } else {
+                    alert(`خطأ: ${data.error}`);
+                }
+            } catch (error) {
+                alert('خطأ في الاتصال بالخادم');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // تغيير البروكسي
+        async function rotateProxy() {
+            try {
+                const response = await fetch('/api/proxy/rotate', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('تم تغيير البروكسي بنجاح');
+                } else {
+                    alert(`خطأ: ${data.error}`);
+                }
+            } catch (error) {
+                alert('خطأ في تغيير البروكسي');
+            }
+        }
+        
+        // تحديث البيانات كل 10 ثوانٍ
+        setInterval(() => {
+            loadStats();
+            loadReports();
+        }, 10000);
+        
+        // التحميل الأولي
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadReports();
+        });
+    </script>
+</body>
+</html>
