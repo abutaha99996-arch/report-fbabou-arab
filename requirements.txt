@@ -1,0 +1,10 @@
+Flask==2.3.3
+Flask-Session==0.5.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+selenium==4.15.0
+fake-useragent==1.4.0
+user-agents==2.2.0
+stem==1.8.2
+lxml==4.9.3
+pysocks==1.7.1
